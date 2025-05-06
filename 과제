@@ -1,0 +1,20 @@
+!pip install openpyxl
+
+import requests
+from bs4 import BeautifulSoup as bs
+import pandas as pd
+
+page = requests.get("https://library.gabia.com/")
+soup = bs(page.text, "html.parser")
+
+elements = soup.select('div.esg-entry-content a.eg-grant-element-0')
+
+titles = [element.text for element in elements]
+links = [element.attrs['href'] for element in elements]
+
+df = pd.DataFrame({'titles': titles, 'links': links})
+
+df.to_excel('./library_gabia.xlsx', sheet_name='Sheet1')
+
+from google.colab import files
+files.download('./library_gabia.xlsx')
